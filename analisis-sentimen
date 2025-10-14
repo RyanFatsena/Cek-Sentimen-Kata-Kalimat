@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analisis Sentimen — Kata & Kalimat (by Ryan Brilian Fatsena 2025)</title>
+  <meta name="description" content="Analisis Sentimen Kata & Kalimat — Positif · Negatif · Netral. Light mode putih + Dark mode biru elegan.">
+  <style>
+    /* ===== THEME (Light default) ===== */
+    :root{
+      --bg:#f6f8fc; --panel:#ffffff; --text:#0b1220; --muted:#64748b; --border:#e5eaf2;
+      --shadow:0 14px 40px rgba(11,18,32,.08);
+      --accent:#22c55e; --accent2:#60a5fa;
+      --bar-bg:#eff3f9; --bar-br:#e5eaf2;
+      --chip-bg:#f8fafc; --chip-br:#e5eaf2;
+      --input-bg:#ffffff;
+      --badge-bg:#f6fff9; --badge-br:#dbe7df; --badge-txt:#0b1220;
+    }
+    /* ===== DARK MODE (matching your right screenshot) ===== */
+    .dark{
+      --bg:#0b1022;
+      --panel:#0f172a;               /* biru tua elegan */
+      --text:#d6deec;                /* tidak terlalu terang */
+      --muted:#94a3b8;               /* abu-abu kebiruan lembut */
+      --border:#1e293b;              /* garis halus */
+      --shadow:0 12px 34px rgba(0,0,0,.35);
+      --bar-bg:#0d1831;              /* area bar */
+      --bar-br:#1f2a40;
+      --chip-bg:#0d1831;
+      --chip-br:#1e293b;
+      --input-bg:#0d1831;
+      --badge-bg:transparent;        /* badge tipis */
+      --badge-br:#334155;            /* border lembut */
+      --badge-txt:#cbd5e1;           /* teks lembut */
+    }
+
+    *{box-sizing:border-box} html,body{margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font:17px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Arial}
+
+    /* Topbar */
+    .topbar{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+      padding:14px 18px;border-bottom:1px solid var(--border);background:#fff}
+    .dark .topbar{background:rgba(10,16,36,.85);backdrop-filter:saturate(140%) blur(8px)}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand .logo{font-size:20px}
+    .brand .title{font-weight:900}
+    .brand .by{color:var(--muted);margin-left:8px;font-weight:600}
+    .actions button{border:1px solid var(--border);background:var(--panel);color:var(--text);
+      border-radius:12px;padding:8px 10px;cursor:pointer}
+
+    /* Hero */
+    .container{max-width:1200px;margin:0 auto;padding:24px 16px}
+    .hero{text-align:center;margin:18px 0 6px}
+    .hero h1{margin:0 0 6px;font-size:2.3rem;font-weight:900;letter-spacing:.2px}
+    .hero .grad{background:linear-gradient(90deg,var(--accent),#14b8a6,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero .lead{color:var(--muted)}
+
+    /* Layout */
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px}
+    @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+    /* Cards */
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .tabs{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;margin-bottom:14px;background:var(--panel)}
+    .tab{background:transparent;color:var(--text);padding:10px 16px;border:none;cursor:pointer;font-weight:700}
+    .tab.active{background:linear-gradient(90deg,rgba(34,197,94,.16),rgba(96,165,250,.16))}
+    .label{display:block;margin:10px 0 6px;color:var(--muted);font-weight:700}
+    input[type=text],textarea{width:100%;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);
+      border-radius:14px;padding:14px 16px;outline:none;font-size:16px}
+    input::placeholder,textarea::placeholder{color:#94a3b8}
+    input:focus,textarea:focus{border-color:#cbd5e1}
+
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{border:1.5px solid var(--border);background:var(--panel);color:var(--text);
+      padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
+    .btn.primary{background:#ecfdf5;border-color:#bbf7d0}
+    .dark .btn.primary{background:#123624;border-color:#14532d}
+
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .chip{border:1px dashed var(--chip-br);background:var(--chip-bg);color:var(--text);
+      border-radius:999px;padding:8px 12px;cursor:pointer;font-size:14px}
+
+    /* Result */
+    .res-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+      font-weight:900;border:2px solid var(--badge-br);background:var(--badge-bg);color:var(--badge-txt)}
+    .badge.pos{color:#16a34a;border-color:#bbf7d0;background:#ecfdf5}
+    .dark .badge.pos{color:#86efac;border-color:#14532d;background:transparent}
+    .badge.neg{color:#ef4444;border-color:#fecaca;background:#fef2f2}
+    .dark .badge.neg{color:#fca5a5;border-color:#7f1d1d;background:transparent}
+    .badge.neu{color:#f59e0b;border-color:#fde68a;background:#fffbeb}
+    .dark .badge.neu{color:#fbbf24;border-color:#78350f;background:transparent}
+
+    .score{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-weight:800}
+
+    .bar{height:34px;background:var(--bar-bg);border:1px solid var(--bar-br);border-radius:20px;overflow:hidden;margin-bottom:12px}
+    .fill{height:100%;width:0;transition:width .55s cubic-bezier(.2,.8,.2,1);opacity:.85}
+    #neg{background:linear-gradient(90deg,rgba(127,29,29,.5),rgba(239,68,68,.8))}
+    #neu{background:linear-gradient(90deg,rgba(120,53,15,.5),rgba(245,158,11,.8))}
+    #pos{background:linear-gradient(90deg,rgba(20,83,45,.5),rgba(34,197,94,.85))}
+    .dark #neg,.dark #neu,.dark #pos{opacity:.7} /* halus di dark mode */
+
+    details summary{cursor:pointer;font-weight:800}
+    .token-list{margin-top:8px;font-family:ui-monospace,Menlo,monospace}
+    .token-item{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--border)}
+
+    footer{color:var(--muted);text-align:center;margin:26px 0}
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <nav class="topbar">
+    <div class="brand">
+      <div class="logo">💬</div>
+      <div class="title">Analisis Sentimen</div>
+      <div class="by">by Ryan Brilian Fatsena 2025</div>
+    </div>
+    <div class="actions"><button id="toggleTheme" title="Ganti tema">🌓</button></div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <h1>Deteksi Sentimen <span class="grad">Kata & Kalimat</span></h1>
+      <p class="lead">Masukkan kata atau kalimat; seluruh analisis terjadi <em>di browser</em>. Klasifikasi: <b>Positif</b> · <b>Negatif</b> · <b>Netral</b>.</p>
+    </header>
+
+    <section class="grid">
+      <!-- INPUT -->
+      <div class="panel">
+        <div class="tabs" role="tablist">
+          <button class="tab active" id="tabWord" role="tab" aria-selected="true">Kata</button>
+          <button class="tab" id="tabSentence" role="tab" aria-selected="false">Kalimat</button>
+        </div>
+
+        <div id="paneWord">
+          <label class="label" for="wordInput">Input Kata</label>
+          <input id="wordInput" type="text" placeholder='Contoh: "bagus", "jelek", "lambat"...'>
+        </div>
+
+        <div id="paneSentence" style="display:none">
+          <label class="label" for="textInput">Input Kalimat</label>
+          <textarea id="textInput" rows="6" placeholder="Contoh: Aplikasinya sangat lambat dan sering error 😡"></textarea>
+        </div>
+
+        <div class="btns">
+          <button id="analyzeBtn" class="btn primary">Analisis</button>
+          <button id="clearBtn" class="btn">Bersihkan</button>
+        </div>
+
+        <div class="label" style="margin-top:12px">Contoh cepat:</div>
+        <div class="chips" id="chips">
+          <button class="chip">bagus</button>
+          <button class="chip">jelek</button>
+          <button class="chip">Aplikasinya sangat cepat dan membantu!</button>
+          <button class="chip">Website sering error dan lambat 😡</button>
+          <button class="chip">Tidak terlalu bagus tapi cukup membantu</button>
+          <button class="chip">Great job, I love the new dashboard! 👍</button>
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div class="panel" aria-live="polite">
+        <div class="res-head">
+          <div id="label" class="badge">Belum ada hasil</div>
+          <div id="score" class="score">Skor: —</div>
+        </div>
+        <div class="bar"><div id="neg" class="fill"></div></div>
+        <div class="bar"><div id="neu" class="fill"></div></div>
+        <div class="bar"><div id="pos" class="fill"></div></div>
+
+        <details>
+          <summary>Rincian token</summary>
+          <div id="tokens" class="token-list"></div>
+        </details>
+      </div>
+    </section>
+
+    <footer>© 2025 Analisis Sentimen — by Ryan Brilian Fatsena.</footer>
+  </main>
+
+  <script>
+    /* Persist theme */
+    (function(){
+      try{
+        const s = localStorage.getItem('sentimen-theme');
+        if(s==='dark') document.documentElement.classList.add('dark');
+      }catch(e){}
+    })();
+
+    const $ = s=>document.querySelector(s), $$ = s=>Array.from(document.querySelectorAll(s));
+    const tabWord=$("#tabWord"), tabSentence=$("#tabSentence");
+    const paneWord=$("#paneWord"), paneSentence=$("#paneSentence");
+    const wordInput=$("#wordInput"), textInput=$("#textInput");
+    const analyzeBtn=$("#analyzeBtn"), clearBtn=$("#clearBtn");
+    const label=$("#label"), score=$("#score");
+    const fillNeg=$("#neg"), fillNeu=$("#neu"), fillPos=$("#pos");
+    const tokenList=$("#tokens");
+    const chips=$$("#chips .chip");
+    const toggleTheme=$("#toggleTheme");
+
+    // Lexicon + contextual rules (decisive, no sensitivity)
+    const lex = {
+      "bagus":2,"baik":2,"hebat":2,"mantap":2,"ramah":2,"cepat":2,"mudah":1.8,"membantu":2,
+      "suka":2,"cinta":2.5,"puas":2,"rekomendasi":2,"terbaik":2.5,"great":2.5,"good":2,"nice":2,"love":2.5,
+      "buruk":-2.7,"jelek":-2.7,"lambat":-2.3,"error":-2.3,"kesal":-2.1,"mengecewakan":-3.0,"payah":-2.2,
+      "benci":-2.6,"parah":-2.6,"mahal":-1.9,"susah":-1.9,"ribet":-1.9,"annoying":-2.1,
+      "lumayan":0,"biasa":0,"cukup":0,"ok":0
+    };
+    const contextual = {
+      "tidak bagus":-1.8,"tidak jelek":0.8,"kurang bagus":-1.2,"kurang buruk":0.8,
+      "sangat lambat":-2.6,"agak lambat":-0.9,"tidak membantu":-2.0,"kurang membantu":-1.6
+    };
+    const emojiScore = {"😊":1.8,"😀":1.8,"😁":1.8,"🙂":1.2,"😍":2.0,"👍":1.6,"🎉":1.6,"😂":1.2,"😡":-2.0,"😠":-1.8,"😢":-1.8,"😭":-2.0,"👎":-1.6,"🤬":-2.4,"🙁":-1.2};
+
+    const tokenize = (t)=> (t.toLowerCase().match(/\w+|[^\s\w]/gu)||[]).filter(Boolean);
+
+    function analyze(text){
+      let score=0, details=[]; const lower=text.toLowerCase();
+
+      for(const k in contextual){
+        if(lower.includes(k)){ score+=contextual[k]; details.push({tok:k,wt:contextual[k],reason:'context'}); }
+      }
+      tokenize(text).forEach(tok=>{
+        if(emojiScore[tok]){ score+=emojiScore[tok]; details.push({tok,wt:emojiScore[tok],reason:'emoji'}); }
+        if(lex[tok]){ score+=lex[tok]; details.push({tok,wt:lex[tok],reason:'lex'}); }
+      });
+
+      const norm = score/(1+Math.abs(score));
+      const pos = Math.max(0,norm), neg = Math.max(0,-norm);
+      const neu = Math.max(0,1-Math.abs(norm)*1.8);
+      const Z = pos+neg+neu; const probs={pos:pos/Z,neg:neg/Z,neu:neu/Z};
+
+      let outLabel='Netral';
+      if(probs.pos>0.6 && probs.pos>probs.neg) outLabel='Positif';
+      else if(probs.neg>0.6 && probs.neg>probs.pos) outLabel='Negatif';
+      else if(Math.abs(norm)>0.2) outLabel = probs.pos>probs.neg ? 'Positif':'Negatif';
+
+      return {label:outLabel, score:norm, probs, details};
+    }
+
+    function render(out){
+      label.textContent=out.label;
+      label.className='badge '+(out.label==='Positif'?'pos':out.label==='Negatif'?'neg':'neu');
+      score.textContent='Skor: '+out.score.toFixed(3);
+      fillNeg.style.width=(out.probs.neg*100).toFixed(1)+'%';
+      fillNeu.style.width=(out.probs.neu*100).toFixed(1)+'%';
+      fillPos.style.width=(out.probs.pos*100).toFixed(1)+'%';
+      tokenList.innerHTML=out.details.map(d=>`<div class="token-item"><span><b>${d.tok}</b></span><span>${d.wt.toFixed(2)}</span><span>${d.reason}</span></div>`).join('');
+    }
+
+    function currentText(){
+      const wActive = tabWord.classList.contains('active');
+      return (wActive?wordInput.value:textInput.value).trim();
+    }
+
+    // UI events
+    tabWord.addEventListener('click',()=>{
+      tabWord.classList.add('active'); tabSentence.classList.remove('active');
+      paneWord.style.display='block'; paneSentence.style.display='none'; wordInput.focus();
+    });
+    tabSentence.addEventListener('click',()=>{
+      tabSentence.classList.add('active'); tabWord.classList.remove('active');
+      paneSentence.style.display='block'; paneWord.style.display='none'; textInput.focus();
+    });
+
+    analyzeBtn.addEventListener('click',()=>{
+      const t=currentText();
+      if(!t){ label.textContent='Masukkan teks dulu ya'; label.className='badge neu'; return; }
+      render(analyze(t));
+    });
+
+    clearBtn.addEventListener('click',()=>{
+      wordInput.value=''; textInput.value='';
+      label.textContent='Belum ada hasil'; label.className='badge';
+      score.textContent='Skor: —'; fillNeg.style.width=fillNeu.style.width=fillPos.style.width='0%';
+      tokenList.innerHTML='';
+    });
+
+    chips.forEach(ch=> ch.addEventListener('click',()=>{
+      const txt=ch.textContent.trim();
+      if(txt.split(/\s+/).length===1){ if(!tabWord.classList.contains('active')) tabWord.click(); wordInput.value=txt; }
+      else { if(tabWord.classList.contains('active')) tabSentence.click(); textInput.value=txt; }
+      analyzeBtn.click();
+    }));
+
+    toggleTheme.addEventListener('click',()=>{
+      const root=document.documentElement;
+      const isDark=root.classList.toggle('dark');
+      try{ localStorage.setItem('sentimen-theme', isDark?'dark':'light'); }catch(e){}
+    });
+  </script>
+</body>
+</html>
