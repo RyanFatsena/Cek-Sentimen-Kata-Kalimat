@@ -1,293 +1,2146 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Analisis Sentimen — Kata & Kalimat (by Ryan Brilian Fatsena 2025)</title>
-  <meta name="description" content="Analisis Sentimen Kata & Kalimat — Positif · Negatif · Netral. Light mode putih + Dark mode biru elegan.">
+  <title>Analisis Sentimen — Kata & Kalimat</title>
+  <meta name="description" content="Analisis Sentimen Kata & Kalimat — Positif · Negatif · Netral">
+
   <style>
-    /* ===== THEME (Light default) ===== */
     :root{
-      --bg:#f6f8fc; --panel:#ffffff; --text:#0b1220; --muted:#64748b; --border:#e5eaf2;
+      --bg:#f6f8fc;
+      --panel:#ffffff;
+      --text:#0b1220;
+      --muted:#64748b;
+      --border:#e5eaf2;
       --shadow:0 14px 40px rgba(11,18,32,.08);
-      --accent:#22c55e; --accent2:#60a5fa;
-      --bar-bg:#eff3f9; --bar-br:#e5eaf2;
-      --chip-bg:#f8fafc; --chip-br:#e5eaf2;
+      --accent:#22c55e;
+      --accent2:#60a5fa;
+      --bar-bg:#eff3f9;
+      --bar-br:#e5eaf2;
+      --chip-bg:#f8fafc;
+      --chip-br:#e5eaf2;
       --input-bg:#ffffff;
-      --badge-bg:#f6fff9; --badge-br:#dbe7df; --badge-txt:#0b1220;
+      --badge-bg:#f6fff9;
+      --badge-br:#dbe7df;
+      --badge-txt:#0b1220;
     }
-    /* ===== DARK MODE (matching your right screenshot) ===== */
+
     .dark{
       --bg:#0b1022;
-      --panel:#0f172a;               /* biru tua elegan */
-      --text:#d6deec;                /* tidak terlalu terang */
-      --muted:#94a3b8;               /* abu-abu kebiruan lembut */
-      --border:#1e293b;              /* garis halus */
+      --panel:#0f172a;
+      --text:#d6deec;
+      --muted:#94a3b8;
+      --border:#1e293b;
       --shadow:0 12px 34px rgba(0,0,0,.35);
-      --bar-bg:#0d1831;              /* area bar */
+      --bar-bg:#0d1831;
       --bar-br:#1f2a40;
       --chip-bg:#0d1831;
       --chip-br:#1e293b;
       --input-bg:#0d1831;
-      --badge-bg:transparent;        /* badge tipis */
-      --badge-br:#334155;            /* border lembut */
-      --badge-txt:#cbd5e1;           /* teks lembut */
+      --badge-bg:transparent;
+      --badge-br:#334155;
+      --badge-txt:#cbd5e1;
     }
 
-    *{box-sizing:border-box} html,body{margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font:17px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Arial}
+    *{box-sizing:border-box}
 
-    /* Topbar */
-    .topbar{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
-      padding:14px 18px;border-bottom:1px solid var(--border);background:#fff}
-    .dark .topbar{background:rgba(10,16,36,.85);backdrop-filter:saturate(140%) blur(8px)}
-    .brand{display:flex;align-items:center;gap:10px}
-    .brand .logo{font-size:20px}
-    .brand .title{font-weight:900}
-    .brand .by{color:var(--muted);margin-left:8px;font-weight:600}
-    .actions button{border:1px solid var(--border);background:var(--panel);color:var(--text);
-      border-radius:12px;padding:8px 10px;cursor:pointer}
+    html,body{
+      margin:0;
+      padding:0;
+    }
 
-    /* Hero */
-    .container{max-width:1200px;margin:0 auto;padding:24px 16px}
-    .hero{text-align:center;margin:18px 0 6px}
-    .hero h1{margin:0 0 6px;font-size:2.3rem;font-weight:900;letter-spacing:.2px}
-    .hero .grad{background:linear-gradient(90deg,var(--accent),#14b8a6,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-    .hero .lead{color:var(--muted)}
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font:17px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Arial;
+    }
 
-    /* Layout */
-    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px}
-    @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 18px;
+      border-bottom:1px solid var(--border);
+      background:#fff;
+    }
 
-    /* Cards */
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
-    .tabs{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;margin-bottom:14px;background:var(--panel)}
-    .tab{background:transparent;color:var(--text);padding:10px 16px;border:none;cursor:pointer;font-weight:700}
-    .tab.active{background:linear-gradient(90deg,rgba(34,197,94,.16),rgba(96,165,250,.16))}
-    .label{display:block;margin:10px 0 6px;color:var(--muted);font-weight:700}
-    input[type=text],textarea{width:100%;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);
-      border-radius:14px;padding:14px 16px;outline:none;font-size:16px}
-    input::placeholder,textarea::placeholder{color:#94a3b8}
-    input:focus,textarea:focus{border-color:#cbd5e1}
+    .dark .topbar{
+      background:rgba(10,16,36,.85);
+      backdrop-filter:saturate(140%) blur(8px);
+    }
 
-    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .btn{border:1.5px solid var(--border);background:var(--panel);color:var(--text);
-      padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}
-    .btn.primary{background:#ecfdf5;border-color:#bbf7d0}
-    .dark .btn.primary{background:#123624;border-color:#14532d}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
 
-    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-    .chip{border:1px dashed var(--chip-br);background:var(--chip-bg);color:var(--text);
-      border-radius:999px;padding:8px 12px;cursor:pointer;font-size:14px}
+    .brand .logo{
+      font-size:20px;
+    }
 
-    /* Result */
-    .res-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
-      font-weight:900;border:2px solid var(--badge-br);background:var(--badge-bg);color:var(--badge-txt)}
-    .badge.pos{color:#16a34a;border-color:#bbf7d0;background:#ecfdf5}
-    .dark .badge.pos{color:#86efac;border-color:#14532d;background:transparent}
-    .badge.neg{color:#ef4444;border-color:#fecaca;background:#fef2f2}
-    .dark .badge.neg{color:#fca5a5;border-color:#7f1d1d;background:transparent}
-    .badge.neu{color:#f59e0b;border-color:#fde68a;background:#fffbeb}
-    .dark .badge.neu{color:#fbbf24;border-color:#78350f;background:transparent}
+    .brand .title{
+      font-weight:900;
+    }
 
-    .score{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-weight:800}
+    .brand .by{
+      color:var(--muted);
+      margin-left:8px;
+      font-weight:600;
+    }
 
-    .bar{height:34px;background:var(--bar-bg);border:1px solid var(--bar-br);border-radius:20px;overflow:hidden;margin-bottom:12px}
-    .fill{height:100%;width:0;transition:width .55s cubic-bezier(.2,.8,.2,1);opacity:.85}
-    #neg{background:linear-gradient(90deg,rgba(127,29,29,.5),rgba(239,68,68,.8))}
-    #neu{background:linear-gradient(90deg,rgba(120,53,15,.5),rgba(245,158,11,.8))}
-    #pos{background:linear-gradient(90deg,rgba(20,83,45,.5),rgba(34,197,94,.85))}
-    .dark #neg,.dark #neu,.dark #pos{opacity:.7} /* halus di dark mode */
+    .actions button{
+      border:1px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+    }
 
-    details summary{cursor:pointer;font-weight:800}
-    .token-list{margin-top:8px;font-family:ui-monospace,Menlo,monospace}
-    .token-item{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--border)}
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      padding:24px 16px;
+    }
 
-    footer{color:var(--muted);text-align:center;margin:26px 0}
+    .hero{
+      text-align:center;
+      margin:18px 0 6px;
+    }
+
+    .hero h1{
+      margin:0 0 6px;
+      font-size:2.3rem;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    .hero .grad{
+      background:linear-gradient(
+        90deg,
+        var(--accent),
+        #14b8a6,
+        var(--accent2)
+      );
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .hero .lead{
+      color:var(--muted);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:22px;
+    }
+
+    @media(max-width:980px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .tabs{
+      display:inline-flex;
+      border:1px solid var(--border);
+      border-radius:999px;
+      overflow:hidden;
+      margin-bottom:14px;
+      background:var(--panel);
+    }
+
+    .tab{
+      background:transparent;
+      color:var(--text);
+      padding:10px 16px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .tab.active{
+      background:linear-gradient(
+        90deg,
+        rgba(34,197,94,.16),
+        rgba(96,165,250,.16)
+      );
+    }
+
+    .label{
+      display:block;
+      margin:10px 0 6px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    input[type=text],
+    textarea{
+      width:100%;
+      border:1.5px solid var(--border);
+      background:var(--input-bg);
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 16px;
+      outline:none;
+      font-size:16px;
+    }
+
+    input::placeholder,
+    textarea::placeholder{
+      color:#94a3b8;
+    }
+
+    input:focus,
+    textarea:focus{
+      border-color:#cbd5e1;
+    }
+
+    .btns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .btn{
+      border:1.5px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .btn.primary{
+      background:#ecfdf5;
+      border-color:#bbf7d0;
+    }
+
+    .dark .btn.primary{
+      background:#123624;
+      border-color:#14532d;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .chip{
+      border:1px dashed var(--chip-br);
+      background:var(--chip-bg);
+      color:var(--text);
+      border-radius:999px;
+      padding:8px 12px;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .res-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+      gap:10px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-weight:900;
+      border:2px solid var(--badge-br);
+      background:var(--badge-bg);
+      color:var(--badge-txt);
+    }
+
+    .badge.pos{
+      color:#16a34a;
+      border-color:#bbf7d0;
+      background:#ecfdf5;
+    }
+
+    .dark .badge.pos{
+      color:#86efac;
+      border-color:#14532d;
+      background:transparent;
+    }
+
+    .badge.neg{
+      color:#ef4444;
+      border-color:#fecaca;
+      background:#fef2f2;
+    }
+
+    .dark .badge.neg{
+      color:#fca5a5;
+      border-color:#7f1d1d;
+      background:transparent;
+    }
+
+    .badge.neu{
+      color:#f59e0b;
+      border-color:#fde68a;
+      background:#fffbeb;
+    }
+
+    .dark .badge.neu{
+      color:#fbbf24;
+      border-color:#78350f;
+      background:transparent;
+    }
+
+    .score{
+      font-family:ui-monospace,Menlo,monospace;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .bar-label{
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:4px;
+    }
+
+    .bar{
+      height:28px;
+      background:var(--bar-bg);
+      border:1px solid var(--bar-br);
+      border-radius:20px;
+      overflow:hidden;
+      margin-bottom:12px;
+    }
+
+    .fill{
+      height:100%;
+      width:0;
+      transition:width .55s cubic-bezier(.2,.8,.2,1);
+      opacity:.85;
+    }
+
+    #neg{
+      background:linear-gradient(
+        90deg,
+        rgba(127,29,29,.5),
+        rgba(239,68,68,.8)
+      );
+    }
+
+    #neu{
+      background:linear-gradient(
+        90deg,
+        rgba(120,53,15,.5),
+        rgba(245,158,11,.8)
+      );
+    }
+
+    #pos{
+      background:linear-gradient(
+        90deg,
+        rgba(20,83,45,.5),
+        rgba(34,197,94,.85)
+      );
+    }
+
+    .dark #neg,
+    .dark #neu,
+    .dark #pos{
+      opacity:.7;
+    }
+
+    details summary{
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .token-list{
+      margin-top:8px;
+      font-family:ui-monospace,Menlo,monospace;
+    }
+
+    .token-item{
+      display:grid;
+      grid-template-columns:1.5fr .7fr 1fr;
+      gap:10px;
+      padding:7px 0;
+      border-bottom:1px dashed var(--border);
+      font-size:14px;
+    }
+
+    .token-positive{
+      color:#16a34a;
+    }
+
+    .token-negative{
+      color:#ef4444;
+    }
+
+    .token-neutral{
+      color:#f59e0b;
+    }
+
+    .detected{
+      margin-top:14px;
+      padding:12px;
+      border-radius:12px;
+      background:var(--chip-bg);
+      border:1px solid var(--border);
+      font-size:14px;
+    }
+
+    .detected b{
+      color:var(--text);
+    }
+
+    footer{
+      color:var(--muted);
+      text-align:center;
+      margin:26px 0;
+    }
   </style>
 </head>
+
 <body>
-  <!-- Topbar -->
-  <nav class="topbar">
-    <div class="brand">
-      <div class="logo">💬</div>
-      <div class="title">Analisis Sentimen</div>
-      <div class="by">by Ryan Brilian Fatsena 2025</div>
+
+<nav class="topbar">
+  <div class="brand">
+    <div class="logo">💬</div>
+    <div class="title">Analisis Sentimen</div>
+    <div class="by">by Ryan Brilian Fatsena 2025</div>
+  </div>
+
+  <div class="actions">
+    <button id="toggleTheme" title="Ganti tema">🌓</button>
+  </div>
+</nav>
+
+
+<main class="container">
+
+  <header class="hero">
+    <h1>
+      Deteksi Sentimen
+      <span class="grad">Kata & Kalimat</span>
+    </h1>
+
+    <p class="lead">
+      Masukkan kata atau kalimat. Sistem mengenali kata positif,
+      negatif, konteks, negasi, intensitas, slang, dan emoji.
+      Klasifikasi: <b>Positif</b> · <b>Negatif</b> · <b>Netral</b>.
+    </p>
+  </header>
+
+
+  <section class="grid">
+
+    <!-- INPUT -->
+    <div class="panel">
+
+      <div class="tabs" role="tablist">
+        <button
+          class="tab active"
+          id="tabWord"
+          role="tab"
+          aria-selected="true">
+          Kata
+        </button>
+
+        <button
+          class="tab"
+          id="tabSentence"
+          role="tab"
+          aria-selected="false">
+          Kalimat
+        </button>
+      </div>
+
+
+      <div id="paneWord">
+
+        <label class="label" for="wordInput">
+          Input Kata
+        </label>
+
+        <input
+          id="wordInput"
+          type="text"
+          placeholder='Contoh: "bagus", "senang", "kecewa"...'
+        />
+
+      </div>
+
+
+      <div id="paneSentence" style="display:none">
+
+        <label class="label" for="textInput">
+          Input Kalimat
+        </label>
+
+        <textarea
+          id="textInput"
+          rows="6"
+          placeholder="Contoh: Aplikasinya sangat bagus dan mudah digunakan!"
+        ></textarea>
+
+      </div>
+
+
+      <div class="btns">
+
+        <button
+          id="analyzeBtn"
+          class="btn primary">
+          Analisis
+        </button>
+
+        <button
+          id="clearBtn"
+          class="btn">
+          Bersihkan
+        </button>
+
+      </div>
+
+
+      <div class="label" style="margin-top:12px">
+        Contoh cepat:
+      </div>
+
+
+      <div class="chips" id="chips">
+
+        <button class="chip">bagus</button>
+
+        <button class="chip">senang</button>
+
+        <button class="chip">kecewa</button>
+
+        <button class="chip">
+          Aplikasinya sangat cepat dan membantu!
+        </button>
+
+        <button class="chip">
+          Website ini bagus banget dan mudah digunakan 👍
+        </button>
+
+        <button class="chip">
+          Tidak terlalu bagus tapi cukup membantu
+        </button>
+
+        <button class="chip">
+          Pelayanannya mengecewakan dan sangat lambat 😡
+        </button>
+
+        <button class="chip">
+          Gak worth it, kualitasnya buruk banget
+        </button>
+
+        <button class="chip">
+          Great job, I love the new dashboard! 👍
+        </button>
+
+      </div>
+
     </div>
-    <div class="actions"><button id="toggleTheme" title="Ganti tema">🌓</button></div>
-  </nav>
 
-  <main class="container">
-    <header class="hero">
-      <h1>Deteksi Sentimen <span class="grad">Kata & Kalimat</span></h1>
-      <p class="lead">Masukkan kata atau kalimat; seluruh analisis terjadi <em>di browser</em>. Klasifikasi: <b>Positif</b> · <b>Negatif</b> · <b>Netral</b>.</p>
-    </header>
 
-    <section class="grid">
-      <!-- INPUT -->
-      <div class="panel">
-        <div class="tabs" role="tablist">
-          <button class="tab active" id="tabWord" role="tab" aria-selected="true">Kata</button>
-          <button class="tab" id="tabSentence" role="tab" aria-selected="false">Kalimat</button>
+    <!-- RESULT -->
+    <div class="panel" aria-live="polite">
+
+      <div class="res-head">
+
+        <div id="label" class="badge">
+          Belum ada hasil
         </div>
 
-        <div id="paneWord">
-          <label class="label" for="wordInput">Input Kata</label>
-          <input id="wordInput" type="text" placeholder='Contoh: "bagus", "jelek", "lambat"...'>
+        <div id="score" class="score">
+          Skor: —
         </div>
 
-        <div id="paneSentence" style="display:none">
-          <label class="label" for="textInput">Input Kalimat</label>
-          <textarea id="textInput" rows="6" placeholder="Contoh: Aplikasinya sangat lambat dan sering error 😡"></textarea>
-        </div>
-
-        <div class="btns">
-          <button id="analyzeBtn" class="btn primary">Analisis</button>
-          <button id="clearBtn" class="btn">Bersihkan</button>
-        </div>
-
-        <div class="label" style="margin-top:12px">Contoh cepat:</div>
-        <div class="chips" id="chips">
-          <button class="chip">bagus</button>
-          <button class="chip">jelek</button>
-          <button class="chip">Aplikasinya sangat cepat dan membantu!</button>
-          <button class="chip">Website sering error dan lambat 😡</button>
-          <button class="chip">Tidak terlalu bagus tapi cukup membantu</button>
-          <button class="chip">Great job, I love the new dashboard! 👍</button>
-        </div>
       </div>
 
-      <!-- RESULT -->
-      <div class="panel" aria-live="polite">
-        <div class="res-head">
-          <div id="label" class="badge">Belum ada hasil</div>
-          <div id="score" class="score">Skor: —</div>
-        </div>
-        <div class="bar"><div id="neg" class="fill"></div></div>
-        <div class="bar"><div id="neu" class="fill"></div></div>
-        <div class="bar"><div id="pos" class="fill"></div></div>
 
-        <details>
-          <summary>Rincian token</summary>
-          <div id="tokens" class="token-list"></div>
-        </details>
+      <div class="bar-label">
+        <span>Negatif</span>
+        <span id="negPercent">0%</span>
       </div>
-    </section>
 
-    <footer>© 2025 Analisis Sentimen — by Ryan Brilian Fatsena.</footer>
-  </main>
+      <div class="bar">
+        <div id="neg" class="fill"></div>
+      </div>
 
-  <script>
-    /* Persist theme */
-    (function(){
-      try{
-        const s = localStorage.getItem('sentimen-theme');
-        if(s==='dark') document.documentElement.classList.add('dark');
-      }catch(e){}
-    })();
 
-    const $ = s=>document.querySelector(s), $$ = s=>Array.from(document.querySelectorAll(s));
-    const tabWord=$("#tabWord"), tabSentence=$("#tabSentence");
-    const paneWord=$("#paneWord"), paneSentence=$("#paneSentence");
-    const wordInput=$("#wordInput"), textInput=$("#textInput");
-    const analyzeBtn=$("#analyzeBtn"), clearBtn=$("#clearBtn");
-    const label=$("#label"), score=$("#score");
-    const fillNeg=$("#neg"), fillNeu=$("#neu"), fillPos=$("#pos");
-    const tokenList=$("#tokens");
-    const chips=$$("#chips .chip");
-    const toggleTheme=$("#toggleTheme");
+      <div class="bar-label">
+        <span>Netral</span>
+        <span id="neuPercent">0%</span>
+      </div>
 
-    // Lexicon + contextual rules (decisive, no sensitivity)
-    const lex = {
-      "bagus":2,"baik":2,"hebat":2,"mantap":2,"ramah":2,"cepat":2,"mudah":1.8,"membantu":2,
-      "suka":2,"cinta":2.5,"puas":2,"rekomendasi":2,"terbaik":2.5,"great":2.5,"good":2,"nice":2,"love":2.5,
-      "buruk":-2.7,"jelek":-2.7,"lambat":-2.3,"error":-2.3,"kesal":-2.1,"mengecewakan":-3.0,"payah":-2.2,
-      "benci":-2.6,"parah":-2.6,"mahal":-1.9,"susah":-1.9,"ribet":-1.9,"annoying":-2.1,
-      "lumayan":0,"biasa":0,"cukup":0,"ok":0
-    };
-    const contextual = {
-      "tidak bagus":-1.8,"tidak jelek":0.8,"kurang bagus":-1.2,"kurang buruk":0.8,
-      "sangat lambat":-2.6,"agak lambat":-0.9,"tidak membantu":-2.0,"kurang membantu":-1.6
-    };
-    const emojiScore = {"😊":1.8,"😀":1.8,"😁":1.8,"🙂":1.2,"😍":2.0,"👍":1.6,"🎉":1.6,"😂":1.2,"😡":-2.0,"😠":-1.8,"😢":-1.8,"😭":-2.0,"👎":-1.6,"🤬":-2.4,"🙁":-1.2};
+      <div class="bar">
+        <div id="neu" class="fill"></div>
+      </div>
 
-    const tokenize = (t)=> (t.toLowerCase().match(/\w+|[^\s\w]/gu)||[]).filter(Boolean);
 
-    function analyze(text){
-      let score=0, details=[]; const lower=text.toLowerCase();
+      <div class="bar-label">
+        <span>Positif</span>
+        <span id="posPercent">0%</span>
+      </div>
 
-      for(const k in contextual){
-        if(lower.includes(k)){ score+=contextual[k]; details.push({tok:k,wt:contextual[k],reason:'context'}); }
+      <div class="bar">
+        <div id="pos" class="fill"></div>
+      </div>
+
+
+      <div id="detected" class="detected">
+        Belum ada kata yang dianalisis.
+      </div>
+
+
+      <details style="margin-top:14px">
+
+        <summary>
+          Rincian analisis
+        </summary>
+
+        <div id="tokens" class="token-list"></div>
+
+      </details>
+
+    </div>
+
+  </section>
+
+
+  <footer>
+    © 2025 Analisis Sentimen — by Ryan Brilian Fatsena.
+  </footer>
+
+</main>
+
+
+<script>
+
+  /* =========================================================
+     THEME
+  ========================================================= */
+
+  (function(){
+
+    try{
+
+      const saved =
+        localStorage.getItem("sentimen-theme");
+
+      if(saved === "dark"){
+        document.documentElement.classList.add("dark");
       }
-      tokenize(text).forEach(tok=>{
-        if(emojiScore[tok]){ score+=emojiScore[tok]; details.push({tok,wt:emojiScore[tok],reason:'emoji'}); }
-        if(lex[tok]){ score+=lex[tok]; details.push({tok,wt:lex[tok],reason:'lex'}); }
+
+    }catch(e){}
+
+  })();
+
+
+  /* =========================================================
+     ELEMENTS
+  ========================================================= */
+
+  const $ =
+    selector => document.querySelector(selector);
+
+  const $$ =
+    selector => Array.from(
+      document.querySelectorAll(selector)
+    );
+
+
+  const tabWord =
+    $("#tabWord");
+
+  const tabSentence =
+    $("#tabSentence");
+
+  const paneWord =
+    $("#paneWord");
+
+  const paneSentence =
+    $("#paneSentence");
+
+  const wordInput =
+    $("#wordInput");
+
+  const textInput =
+    $("#textInput");
+
+  const analyzeBtn =
+    $("#analyzeBtn");
+
+  const clearBtn =
+    $("#clearBtn");
+
+  const label =
+    $("#label");
+
+  const scoreEl =
+    $("#score");
+
+  const fillNeg =
+    $("#neg");
+
+  const fillNeu =
+    $("#neu");
+
+  const fillPos =
+    $("#pos");
+
+  const negPercent =
+    $("#negPercent");
+
+  const neuPercent =
+    $("#neuPercent");
+
+  const posPercent =
+    $("#posPercent");
+
+  const tokenList =
+    $("#tokens");
+
+  const detected =
+    $("#detected");
+
+  const chips =
+    $$("#chips .chip");
+
+  const toggleTheme =
+    $("#toggleTheme");
+
+
+  /* =========================================================
+     POSITIVE LEXICON
+  ========================================================= */
+
+  const positiveWords = {
+
+    bagus:2.4,
+    baik:2.3,
+    hebat:2.6,
+    mantap:2.5,
+    keren:2.5,
+    luarbiasa:3.0,
+    sempurna:3.0,
+    terbaik:3.0,
+    unggul:2.6,
+    berkualitas:2.5,
+    positif:2.2,
+
+    senang:2.5,
+    bahagia:2.7,
+    gembira:2.6,
+    lega:2.1,
+    bangga:2.5,
+    nyaman:2.2,
+    tenang:1.9,
+    aman:2.0,
+    kagum:2.5,
+    terkesan:2.3,
+    bersyukur:2.4,
+
+    suka:2.3,
+    cinta:2.8,
+    sayang:2.2,
+    puas:2.6,
+    memuaskan:2.7,
+    menyenangkan:2.5,
+    menikmati:2.2,
+
+    cepat:2.0,
+    mudah:2.0,
+    membantu:2.3,
+    bermanfaat:2.3,
+    berguna:2.1,
+    efektif:2.2,
+    efisien:2.1,
+    praktis:2.0,
+    sederhana:1.5,
+    jelas:1.7,
+    responsif:2.1,
+    stabil:2.0,
+    lancar:2.3,
+
+    berhasil:2.6,
+    sukses:2.7,
+    tercapai:2.4,
+    berkembang:2.1,
+    meningkat:2.1,
+    maju:2.0,
+    menang:2.5,
+    amanah:2.0,
+
+    rekomendasi:2.4,
+    recommended:2.6,
+    recommend:2.4,
+    worth:2.0,
+    worthit:2.7,
+
+    top:2.5,
+    jos:2.5,
+    mantul:2.5,
+    cakep:2.2,
+    asik:2.3,
+    asyik:2.3,
+    oke:1.7,
+    ok:1.7,
+
+    great:2.7,
+    good:2.3,
+    nice:2.2,
+    love:2.8,
+    excellent:3.0,
+    amazing:3.0,
+    awesome:3.0,
+    perfect:3.0,
+    happy:2.5,
+    helpful:2.4,
+    useful:2.2,
+    easy:2.0,
+    fast:2.0,
+    success:2.6
+  };
+
+
+  /* =========================================================
+     NEGATIVE LEXICON
+  ========================================================= */
+
+  const negativeWords = {
+
+    buruk:-2.7,
+    jelek:-2.8,
+    parah:-2.8,
+    payah:-2.5,
+    rusak:-2.8,
+    gagal:-2.9,
+    gagaltotal:-3.2,
+
+    kecewa:-2.8,
+    mengecewakan:-3.0,
+    kesal:-2.4,
+    marah:-2.6,
+    sedih:-2.5,
+    khawatir:-2.1,
+    takut:-2.3,
+    cemas:-2.3,
+    frustrasi:-2.8,
+    frustasi:-2.8,
+    jengkel:-2.4,
+    nyesek:-2.2,
+    menyesal:-2.5,
+
+    benci:-2.9,
+    muak:-2.9,
+    jijik:-2.8,
+
+    lambat:-2.4,
+    error:-2.5,
+    bermasalah:-2.5,
+    kacau:-2.8,
+    ribet:-2.2,
+    rumit:-1.9,
+    susah:-2.2,
+    sulit:-2.2,
+    membingungkan:-2.3,
+    bingung:-1.8,
+
+    mengganggu:-2.2,
+    menjengkelkan:-2.5,
+    ngeselin:-2.6,
+    nyebelin:-2.6,
+    merepotkan:-2.2,
+    menyusahkan:-2.4,
+
+    mahal:-1.9,
+    rugi:-2.5,
+    kehilangan:-2.3,
+    menurun:-2.0,
+    terlambat:-2.2,
+    terhambat:-2.2,
+    macet:-2.4,
+    gagal:-2.9,
+
+    tidakaman:-2.7,
+    tidaknyaman:-2.5,
+    tidakjelas:-2.2,
+    tidakefektif:-2.4,
+
+    zonk:-2.8,
+    ampas:-3.0,
+    sampah:-3.0,
+    abalabal:-2.7,
+    ngawur:-2.5,
+    ngaco:-2.7,
+
+    annoying:-2.5,
+    bad:-2.7,
+    worst:-3.0,
+    terrible:-3.0,
+    horrible:-3.0,
+    disappointing:-3.0,
+    disappointed:-2.8,
+    angry:-2.5,
+    sad:-2.4,
+    hate:-2.9,
+    useless:-2.7,
+    difficult:-2.1,
+    slow:-2.3,
+    broken:-2.8,
+    fail:-2.8
+  };
+
+
+  /* =========================================================
+     PHRASES
+  ========================================================= */
+
+  const phrases = {
+
+    "sangat bagus":3.2,
+    "sangat baik":3.1,
+    "sangat hebat":3.4,
+    "sangat keren":3.4,
+    "sangat puas":3.4,
+    "sangat membantu":3.2,
+    "sangat mudah":3.0,
+    "sangat nyaman":3.1,
+    "sangat menyenangkan":3.3,
+    "sangat cepat":3.0,
+
+    "bagus banget":3.5,
+    "baik banget":3.4,
+    "keren banget":3.6,
+    "senang banget":3.5,
+    "puas banget":3.6,
+    "suka banget":3.6,
+    "mantap banget":3.6,
+    "luar biasa":3.6,
+    "luar biasa bagus":3.8,
+
+    "sangat buruk":-3.5,
+    "sangat jelek":-3.5,
+    "sangat parah":-3.6,
+    "sangat lambat":-3.2,
+    "sangat mengecewakan":-3.7,
+    "sangat sulit":-3.0,
+    "sangat ribet":-3.1,
+
+    "buruk banget":-3.7,
+    "jelek banget":-3.7,
+    "parah banget":-3.8,
+    "lambat banget":-3.5,
+    "kecewa banget":-3.8,
+    "kesal banget":-3.5,
+    "ngeselin banget":-3.7,
+
+    "tidak bagus":-2.8,
+    "tidak baik":-2.6,
+    "tidak membantu":-2.8,
+    "tidak nyaman":-2.7,
+    "tidak aman":-2.8,
+    "tidak efektif":-2.7,
+    "tidak mudah":-2.2,
+    "tidak jelas":-2.2,
+
+    "tidak buruk":1.0,
+    "tidak jelek":1.0,
+    "tidak sulit":1.0,
+
+    "kurang bagus":-1.7,
+    "kurang baik":-1.6,
+    "kurang membantu":-1.7,
+    "kurang nyaman":-1.6,
+    "kurang jelas":-1.6,
+
+    "cukup bagus":1.3,
+    "cukup baik":1.3,
+    "cukup membantu":1.4,
+    "cukup nyaman":1.3,
+
+    "gak bagus":-2.8,
+    "gak baik":-2.6,
+    "gak membantu":-2.8,
+    "gak nyaman":-2.7,
+    "gak jelas":-2.2,
+    "gak worth it":-2.9,
+
+    "nggak bagus":-2.8,
+    "nggak baik":-2.6,
+    "nggak membantu":-2.8,
+    "nggak nyaman":-2.7,
+    "nggak jelas":-2.2,
+    "nggak worth it":-2.9,
+
+    "ga bagus":-2.8,
+    "ga baik":-2.6,
+    "ga membantu":-2.8,
+    "ga nyaman":-2.7,
+    "ga worth it":-2.9,
+
+    "worth it":2.7,
+    "recommended banget":3.5,
+    "sangat worth it":3.4,
+
+    "good job":2.9,
+    "great job":3.2,
+    "well done":3.0,
+
+    "not good":-2.8,
+    "not bad":1.0,
+    "not helpful":-2.7,
+    "not worth it":-2.9
+  };
+
+
+  /* =========================================================
+     EMOJI
+  ========================================================= */
+
+  const emojiScore = {
+
+    "😊":1.8,
+    "😀":2.0,
+    "😁":2.1,
+    "🙂":1.3,
+    "😄":2.0,
+    "😃":2.0,
+    "😍":2.8,
+    "🥰":2.8,
+    "😘":2.3,
+    "❤":2.5,
+    "❤️":2.7,
+    "💕":2.5,
+    "💖":2.7,
+    "👍":1.8,
+    "👏":1.8,
+    "🎉":2.0,
+    "🔥":2.0,
+    "✨":1.6,
+    "😂":1.5,
+    "🤣":1.7,
+
+    "😡":-2.6,
+    "😠":-2.4,
+    "😤":-2.5,
+    "😢":-2.2,
+    "😭":-2.7,
+    "😞":-2.4,
+    "😔":-2.2,
+    "😟":-2.0,
+    "😰":-2.2,
+    "😨":-2.2,
+    "😱":-2.5,
+    "🤬":-3.0,
+    "👎":-2.0,
+    "💔":-2.8,
+    "😒":-2.0,
+    "🙁":-1.6,
+    "☹️":-2.0,
+    "🤮":-2.8
+  };
+
+
+  /* =========================================================
+     NEGATION
+  ========================================================= */
+
+  const negationWords = new Set([
+
+    "tidak",
+    "tak",
+    "bukan",
+    "belum",
+    "jangan",
+
+    "gak",
+    "ga",
+    "nggak",
+    "ngga",
+    "enggak",
+    "engga",
+
+    "gk",
+    "tdk",
+    "bkn",
+
+    "not",
+    "never"
+  ]);
+
+
+  /* =========================================================
+     INTENSIFIER
+  ========================================================= */
+
+  const intensifiers = {
+
+    sangat:1.55,
+    amat:1.5,
+    banget:1.65,
+    sekali:1.45,
+    benar:1.25,
+    benarbenar:1.5,
+    benar2:1.5,
+    really:1.5,
+    very:1.55,
+    extremely:1.8,
+    luar:1.2,
+    luar biasa:1.8,
+
+    terlalu:1.35,
+    super:1.65,
+    paling:1.5
+  };
+
+
+  /* =========================================================
+     DIMINISHERS
+  ========================================================= */
+
+  const diminishers = {
+
+    agak:.55,
+    sedikit:.45,
+    cukup:.65,
+    lumayan:.75,
+    kurang:.65,
+    somewhat:.6,
+    agaklah:.5
+  };
+
+
+  /* =========================================================
+     NORMALIZATION
+  ========================================================= */
+
+  function normalizeText(text){
+
+    return text
+      .toLowerCase()
+
+      .replace(/[“”"]/g,'"')
+
+      .replace(/\bnggak\b/g,"nggak")
+      .replace(/\bngga\b/g,"nggak")
+      .replace(/\benggak\b/g,"nggak")
+      .replace(/\bengga\b/g,"nggak")
+
+      .replace(/\bgak\b/g,"gak")
+      .replace(/\bga\b/g,"gak")
+      .replace(/\bgk\b/g,"gak")
+
+      .replace(/\btdk\b/g,"tidak")
+      .replace(/\bbkn\b/g,"bukan")
+
+      .replace(/\bworth\s+it\b/g,"worth it")
+
+      .replace(/\bbenar\s+benar\b/g,"benarbenar")
+
+      .replace(/\s+/g," ")
+      .trim();
+  }
+
+
+  /* =========================================================
+     TOKENIZER
+  ========================================================= */
+
+  function tokenize(text){
+
+    return (
+      text
+        .toLowerCase()
+        .match(/[\p{L}\p{N}]+|[^\s\p{L}\p{N}]/gu)
+      || []
+    );
+
+  }
+
+
+  /* =========================================================
+     SOFTMAX
+  ========================================================= */
+
+  function softmax(values){
+
+    const max =
+      Math.max(...values);
+
+    const exps =
+      values.map(
+        value => Math.exp(value-max)
+      );
+
+    const total =
+      exps.reduce(
+        (a,b)=>a+b,
+        0
+      );
+
+    return exps.map(
+      value => value/total
+    );
+
+  }
+
+
+  /* =========================================================
+     ANALYZE
+  ========================================================= */
+
+  function analyze(text){
+
+    const normalized =
+      normalizeText(text);
+
+    const tokens =
+      tokenize(normalized);
+
+    let positiveScore = 0;
+
+    let negativeScore = 0;
+
+    let details = [];
+
+    let matchedPositions =
+      new Set();
+
+
+    /* -----------------------------------------
+       PHRASES
+    ----------------------------------------- */
+
+    const sortedPhrases =
+      Object.keys(phrases)
+        .sort(
+          (a,b)=>
+            b.length-a.length
+        );
+
+
+    sortedPhrases.forEach(
+      phrase => {
+
+        if(
+          normalized.includes(phrase)
+        ){
+
+          const weight =
+            phrases[phrase];
+
+          if(weight > 0){
+
+            positiveScore +=
+              weight;
+
+          }else{
+
+            negativeScore +=
+              Math.abs(weight);
+
+          }
+
+
+          details.push({
+
+            tok:phrase,
+
+            wt:weight,
+
+            reason:"phrase"
+
+          });
+
+
+          const phraseTokens =
+            phrase.split(/\s+/);
+
+          phraseTokens.forEach(
+            token => {
+
+              const index =
+                tokens.indexOf(token);
+
+              if(index !== -1){
+
+                matchedPositions.add(
+                  index
+                );
+
+              }
+
+            }
+          );
+
+        }
+
+      }
+    );
+
+
+    /* -----------------------------------------
+       WORD ANALYSIS
+    ----------------------------------------- */
+
+    for(
+      let i=0;
+      i<tokens.length;
+      i++
+    ){
+
+      const token =
+        tokens[i];
+
+
+      /* Emoji */
+
+      if(
+        emojiScore[token] !== undefined
+      ){
+
+        const weight =
+          emojiScore[token];
+
+        if(weight > 0){
+
+          positiveScore +=
+            weight;
+
+        }else{
+
+          negativeScore +=
+            Math.abs(weight);
+
+        }
+
+        details.push({
+
+          tok:token,
+
+          wt:weight,
+
+          reason:"emoji"
+
+        });
+
+        continue;
+      }
+
+
+      /* Punctuation */
+
+      if(
+        !/^[\p{L}\p{N}]+$/u.test(token)
+      ){
+
+        continue;
+
+      }
+
+
+      /* Skip words already counted as phrase */
+
+      if(
+        matchedPositions.has(i)
+      ){
+
+        continue;
+
+      }
+
+
+      let weight = 0;
+
+      let reason = "";
+
+
+      if(
+        positiveWords[token] !== undefined
+      ){
+
+        weight =
+          positiveWords[token];
+
+        reason =
+          "lexicon";
+
+      }
+
+
+      if(
+        negativeWords[token] !== undefined
+      ){
+
+        weight =
+          negativeWords[token];
+
+        reason =
+          "lexicon";
+
+      }
+
+
+      if(weight === 0){
+
+        continue;
+
+      }
+
+
+      /* ---------------------------------------
+         CHECK NEGATION
+      --------------------------------------- */
+
+      let negated = false;
+
+      let negator = "";
+
+
+      for(
+        let j=Math.max(0,i-3);
+        j<i;
+        j++
+      ){
+
+        if(
+          negationWords.has(tokens[j])
+        ){
+
+          negated = true;
+
+          negator =
+            tokens[j];
+
+        }
+
+      }
+
+
+      /* ---------------------------------------
+         INTENSIFIER
+      --------------------------------------- */
+
+      let multiplier = 1;
+
+      let modifier = "";
+
+
+      for(
+        let j=Math.max(0,i-2);
+        j<i;
+        j++
+      ){
+
+        if(
+          intensifiers[tokens[j]]
+        ){
+
+          multiplier *=
+            intensifiers[tokens[j]];
+
+          modifier =
+            tokens[j];
+
+        }
+
+
+        if(
+          diminishers[tokens[j]]
+        ){
+
+          multiplier *=
+            diminishers[tokens[j]];
+
+          modifier =
+            tokens[j];
+
+        }
+
+      }
+
+
+      let finalWeight =
+        weight * multiplier;
+
+
+      /* ---------------------------------------
+         NEGATION FLIP
+      --------------------------------------- */
+
+      if(negated){
+
+        finalWeight =
+          -finalWeight;
+
+        reason =
+          "negation";
+
+      }
+
+
+      if(
+        Math.abs(finalWeight) < 0.05
+      ){
+
+        continue;
+
+      }
+
+
+      if(finalWeight > 0){
+
+        positiveScore +=
+          finalWeight;
+
+      }else{
+
+        negativeScore +=
+          Math.abs(finalWeight);
+
+      }
+
+
+      details.push({
+
+        tok:token,
+
+        wt:finalWeight,
+
+        reason:
+          reason === "negation"
+            ? `negation (${negator})`
+            : modifier
+              ? `intensifier (${modifier})`
+              : reason
+
       });
 
-      const norm = score/(1+Math.abs(score));
-      const pos = Math.max(0,norm), neg = Math.max(0,-norm);
-      const neu = Math.max(0,1-Math.abs(norm)*1.8);
-      const Z = pos+neg+neu; const probs={pos:pos/Z,neg:neg/Z,neu:neu/Z};
-
-      let outLabel='Netral';
-      if(probs.pos>0.6 && probs.pos>probs.neg) outLabel='Positif';
-      else if(probs.neg>0.6 && probs.neg>probs.pos) outLabel='Negatif';
-      else if(Math.abs(norm)>0.2) outLabel = probs.pos>probs.neg ? 'Positif':'Negatif';
-
-      return {label:outLabel, score:norm, probs, details};
     }
 
-    function render(out){
-      label.textContent=out.label;
-      label.className='badge '+(out.label==='Positif'?'pos':out.label==='Negatif'?'neg':'neu');
-      score.textContent='Skor: '+out.score.toFixed(3);
-      fillNeg.style.width=(out.probs.neg*100).toFixed(1)+'%';
-      fillNeu.style.width=(out.probs.neu*100).toFixed(1)+'%';
-      fillPos.style.width=(out.probs.pos*100).toFixed(1)+'%';
-      tokenList.innerHTML=out.details.map(d=>`<div class="token-item"><span><b>${d.tok}</b></span><span>${d.wt.toFixed(2)}</span><span>${d.reason}</span></div>`).join('');
+
+    /* -----------------------------------------
+       FINAL SCORE
+    ----------------------------------------- */
+
+    const netScore =
+      positiveScore -
+      negativeScore;
+
+
+    const evidence =
+      positiveScore +
+      negativeScore;
+
+
+    /*
+      Jika tidak ada bukti sentimen,
+      tetap Netral.
+
+      Tetapi jika sudah ada bukti,
+      Netral diberi bobot lebih kecil.
+    */
+
+    let positiveLogit =
+      positiveScore * 1.25;
+
+    let negativeLogit =
+      negativeScore * 1.25;
+
+    let neutralLogit =
+      evidence === 0
+        ? 1.8
+        : Math.max(
+            0.15,
+            1.4 - evidence*0.45
+          );
+
+
+    /*
+      Tambahan dorongan supaya satu kata
+      sentimen yang jelas tidak mudah menjadi
+      Netral.
+    */
+
+    if(
+      positiveScore > 0 &&
+      negativeScore === 0
+    ){
+
+      positiveLogit += 0.9;
+
     }
 
-    function currentText(){
-      const wActive = tabWord.classList.contains('active');
-      return (wActive?wordInput.value:textInput.value).trim();
+
+    if(
+      negativeScore > 0 &&
+      positiveScore === 0
+    ){
+
+      negativeLogit += 0.9;
+
     }
 
-    // UI events
-    tabWord.addEventListener('click',()=>{
-      tabWord.classList.add('active'); tabSentence.classList.remove('active');
-      paneWord.style.display='block'; paneSentence.style.display='none'; wordInput.focus();
-    });
-    tabSentence.addEventListener('click',()=>{
-      tabSentence.classList.add('active'); tabWord.classList.remove('active');
-      paneSentence.style.display='block'; paneWord.style.display='none'; textInput.focus();
-    });
 
-    analyzeBtn.addEventListener('click',()=>{
-      const t=currentText();
-      if(!t){ label.textContent='Masukkan teks dulu ya'; label.className='badge neu'; return; }
-      render(analyze(t));
-    });
+    const probabilities =
+      softmax([
+        negativeLogit,
+        neutralLogit,
+        positiveLogit
+      ]);
 
-    clearBtn.addEventListener('click',()=>{
-      wordInput.value=''; textInput.value='';
-      label.textContent='Belum ada hasil'; label.className='badge';
-      score.textContent='Skor: —'; fillNeg.style.width=fillNeu.style.width=fillPos.style.width='0%';
-      tokenList.innerHTML='';
-    });
 
-    chips.forEach(ch=> ch.addEventListener('click',()=>{
-      const txt=ch.textContent.trim();
-      if(txt.split(/\s+/).length===1){ if(!tabWord.classList.contains('active')) tabWord.click(); wordInput.value=txt; }
-      else { if(tabWord.classList.contains('active')) tabSentence.click(); textInput.value=txt; }
-      analyzeBtn.click();
-    }));
+    const probs = {
 
-    toggleTheme.addEventListener('click',()=>{
-      const root=document.documentElement;
-      const isDark=root.classList.toggle('dark');
-      try{ localStorage.setItem('sentimen-theme', isDark?'dark':'light'); }catch(e){}
-    });
-  </script>
+      neg:probabilities[0],
+
+      neu:probabilities[1],
+
+      pos:probabilities[2]
+
+    };
+
+
+    let outputLabel =
+      "Netral";
+
+
+    /*
+      Keputusan akhir berdasarkan bukti,
+      bukan hanya ambang 0.60.
+    */
+
+    if(
+      evidence === 0
+    ){
+
+      outputLabel =
+        "Netral";
+
+    }else if(
+      positiveScore >
+      negativeScore * 1.15
+    ){
+
+      outputLabel =
+        "Positif";
+
+    }else if(
+      negativeScore >
+      positiveScore * 1.15
+    ){
+
+      outputLabel =
+        "Negatif";
+
+    }else{
+
+      /*
+        Kalau dua sentimen hampir seimbang,
+        tetap Netral karena memang ambigu.
+      */
+
+      outputLabel =
+        "Netral";
+
+    }
+
+
+    return {
+
+      label:outputLabel,
+
+      score:
+        Math.tanh(
+          netScore/3
+        ),
+
+      probs,
+
+      details,
+
+      positiveScore,
+
+      negativeScore,
+
+      evidence
+
+    };
+
+  }
+
+
+  /* =========================================================
+     RENDER
+  ========================================================= */
+
+  function render(out){
+
+    label.textContent =
+      out.label;
+
+
+    label.className =
+      "badge " +
+      (
+        out.label === "Positif"
+          ? "pos"
+          : out.label === "Negatif"
+            ? "neg"
+            : "neu"
+      );
+
+
+    scoreEl.textContent =
+      "Skor: " +
+      out.score.toFixed(3);
+
+
+    const neg =
+      out.probs.neg * 100;
+
+    const neu =
+      out.probs.neu * 100;
+
+    const pos =
+      out.probs.pos * 100;
+
+
+    fillNeg.style.width =
+      neg.toFixed(1) + "%";
+
+    fillNeu.style.width =
+      neu.toFixed(1) + "%";
+
+    fillPos.style.width =
+      pos.toFixed(1) + "%";
+
+
+    negPercent.textContent =
+      neg.toFixed(1) + "%";
+
+    neuPercent.textContent =
+      neu.toFixed(1) + "%";
+
+    posPercent.textContent =
+      pos.toFixed(1) + "%";
+
+
+    /* -----------------------------------------
+       DETECTED SUMMARY
+    ----------------------------------------- */
+
+    if(
+      out.details.length === 0
+    ){
+
+      detected.innerHTML =
+        "<b>Tidak ada kata sentimen yang dikenali.</b><br>" +
+        "Sistem menganggap teks ini Netral.";
+
+    }else{
+
+      const positive =
+        out.details.filter(
+          item => item.wt > 0
+        );
+
+      const negative =
+        out.details.filter(
+          item => item.wt < 0
+        );
+
+
+      let html =
+        "<b>Elemen sentimen yang ditemukan:</b><br>";
+
+
+      if(positive.length){
+
+        html +=
+          "<span class='token-positive'>+" +
+          positive
+            .map(item=>item.tok)
+            .join(", ") +
+          "</span><br>";
+
+      }
+
+
+      if(negative.length){
+
+        html +=
+          "<span class='token-negative'>−" +
+          negative
+            .map(item=>item.tok)
+            .join(", ") +
+          "</span>";
+
+      }
+
+
+      detected.innerHTML =
+        html;
+
+    }
+
+
+    /* -----------------------------------------
+       DETAIL
+    ----------------------------------------- */
+
+    tokenList.innerHTML =
+      out.details
+        .map(
+          item => {
+
+            const cls =
+              item.wt > 0
+                ? "token-positive"
+                : "token-negative";
+
+
+            return `
+              <div class="token-item ${cls}">
+                <span>
+                  <b>${item.tok}</b>
+                </span>
+
+                <span>
+                  ${item.wt.toFixed(2)}
+                </span>
+
+                <span>
+                  ${item.reason}
+                </span>
+              </div>
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  /* =========================================================
+     CURRENT TEXT
+  ========================================================= */
+
+  function currentText(){
+
+    const wordActive =
+      tabWord.classList.contains(
+        "active"
+      );
+
+
+    return (
+      wordActive
+        ? wordInput.value
+        : textInput.value
+    ).trim();
+
+  }
+
+
+  /* =========================================================
+     TAB WORD
+  ========================================================= */
+
+  tabWord.addEventListener(
+    "click",
+    ()=>{
+
+      tabWord.classList.add(
+        "active"
+      );
+
+      tabSentence.classList.remove(
+        "active"
+      );
+
+
+      tabWord.setAttribute(
+        "aria-selected",
+        "true"
+      );
+
+      tabSentence.setAttribute(
+        "aria-selected",
+        "false"
+      );
+
+
+      paneWord.style.display =
+        "block";
+
+      paneSentence.style.display =
+        "none";
+
+      wordInput.focus();
+
+    }
+  );
+
+
+  /* =========================================================
+     TAB SENTENCE
+  ========================================================= */
+
+  tabSentence.addEventListener(
+    "click",
+    ()=>{
+
+      tabSentence.classList.add(
+        "active"
+      );
+
+      tabWord.classList.remove(
+        "active"
+      );
+
+
+      tabSentence.setAttribute(
+        "aria-selected",
+        "true"
+      );
+
+      tabWord.setAttribute(
+        "aria-selected",
+        "false"
+      );
+
+
+      paneSentence.style.display =
+        "block";
+
+      paneWord.style.display =
+        "none";
+
+      textInput.focus();
+
+    }
+  );
+
+
+  /* =========================================================
+     ANALYZE BUTTON
+  ========================================================= */
+
+  analyzeBtn.addEventListener(
+    "click",
+    ()=>{
+
+      const text =
+        currentText();
+
+
+      if(!text){
+
+        label.textContent =
+          "Masukkan teks dulu ya";
+
+        label.className =
+          "badge neu";
+
+        scoreEl.textContent =
+          "Skor: —";
+
+        return;
+
+      }
+
+
+      const result =
+        analyze(text);
+
+
+      render(result);
+
+    }
+  );
+
+
+  /* =========================================================
+     CLEAR
+  ========================================================= */
+
+  clearBtn.addEventListener(
+    "click",
+    ()=>{
+
+      wordInput.value =
+        "";
+
+      textInput.value =
+        "";
+
+
+      label.textContent =
+        "Belum ada hasil";
+
+      label.className =
+        "badge";
+
+
+      scoreEl.textContent =
+        "Skor: —";
+
+
+      fillNeg.style.width =
+        "0%";
+
+      fillNeu.style.width =
+        "0%";
+
+      fillPos.style.width =
+        "0%";
+
+
+      negPercent.textContent =
+        "0%";
+
+      neuPercent.textContent =
+        "0%";
+
+      posPercent.textContent =
+        "0%";
+
+
+      detected.innerHTML =
+        "Belum ada kata yang dianalisis.";
+
+
+      tokenList.innerHTML =
+        "";
+
+    }
+  );
+
+
+  /* =========================================================
+     QUICK CHIPS
+  ========================================================= */
+
+  chips.forEach(
+    chip => {
+
+      chip.addEventListener(
+        "click",
+        ()=>{
+
+          const text =
+            chip.textContent.trim();
+
+
+          if(
+            text.split(/\s+/).length === 1
+          ){
+
+            if(
+              !tabWord.classList.contains(
+                "active"
+              )
+            ){
+
+              tabWord.click();
+
+            }
+
+            wordInput.value =
+              text;
+
+          }else{
+
+            if(
+              tabWord.classList.contains(
+                "active"
+              )
+            ){
+
+              tabSentence.click();
+
+            }
+
+            textInput.value =
+              text;
+
+          }
+
+
+          analyzeBtn.click();
+
+        }
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     THEME TOGGLE
+  ========================================================= */
+
+  toggleTheme.addEventListener(
+    "click",
+    ()=>{
+
+      const root =
+        document.documentElement;
+
+
+      const isDark =
+        root.classList.toggle(
+          "dark"
+        );
+
+
+      try{
+
+        localStorage.setItem(
+          "sentimen-theme",
+          isDark
+            ? "dark"
+            : "light"
+        );
+
+      }catch(e){}
+
+    }
+  );
+
+</script>
+
 </body>
 </html>
+```
