@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1177,10 +1176,15 @@
 
   function tokenize(text){
 
+    /*
+      Tokenizer dibuat lebih kompatibel agar tombol dan
+      analisis tetap berjalan di browser/editor yang tidak
+      mendukung Unicode Property Escape secara penuh.
+    */
     return (
       text
         .toLowerCase()
-        .match(/[\p{L}\p{N}]+|[^\s\p{L}\p{N}]/gu)
+        .match(/[a-zA-ZÀ-ÿ0-9]+|[^\sa-zA-ZÀ-ÿ0-9]/g)
       || []
     );
 
@@ -1360,7 +1364,7 @@
       /* Punctuation */
 
       if(
-        !/^[\p{L}\p{N}]+$/u.test(token)
+        !/^[a-zA-ZÀ-ÿ0-9]+$/.test(token)
       ){
 
         continue;
